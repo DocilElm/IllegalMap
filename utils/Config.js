@@ -581,22 +581,21 @@ const config = new DefaultConfig("IllegalMap", "data/settings.json")
 })
 
 const setting = new Settings("IllegalMap", config, "data/ColorScheme.json")
-const handler = setting.getHandler()
+
+setting.AmaterasuGui.descriptionElement.textWrap.enabled = false
 
 applyChanges(setting)
 
-handler.registers.onKeyType((keyChar, keyCode) => {
+setting.getHandler().registers.onKeyType((keyChar, keyCode) => {
     if (keyCode === Keyboard.KEY_BACK || keyCode === 1) return
 
-    const search = setting.searchBar
-    if (search.selected) return
+    if (!setting.searchBar._focusSearch()) return
 
-    search._focusSearch()
-    Client.scheduleTask(() => handler.getWindow().keyType(keyChar, keyCode))
+    Client.scheduleTask(() => setting.getHandler().getWindow().keyType(keyChar, keyCode))
 })
 
 export default () => setting.settings
 
 register("gameUnload", () => {
-    FileLib.write("IllegalMap", "data/ColorScheme.json", JSON.stringify(handler.getColorScheme(), null, 4))
+    FileLib.write("IllegalMap", "data/ColorScheme.json", JSON.stringify(setting.getHandler().getColorScheme(), null, 4))
 })
